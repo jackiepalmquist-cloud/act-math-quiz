@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT Math: Then vs. Now Quiz Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script>
+        const { useState } = React;
+        const e = React.createElement;
+
+        const CheckIcon = () => e('svg', { className: 'w-8 h-8', fill: 'currentColor', viewBox: '0 0 24 24' },
+            e('path', { d: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' })
+        );
+
+        const XIcon = () => e('svg', { className: 'w-8 h-8', fill: 'currentColor', viewBox: '0 0 24 24' },
+            e('path', { d: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z' })
+        );
+
+        function QuizGame() {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [showResult, setShowResult] = useState(false);
+            const [votes, setVotes] = useState({ pre2016: 0, new2025: 0, both: 0 });
+
+            const questions = [
+                {
+                    fact: "Students have 60 minutes to complete the Math section",
+                    correct: "pre2016",
+                    explanation: "Pre-2016: 60 minutes for 60 questions. New 2025: 50 minutes for 45 questions."
+                },
+                {
+                    fact: "The Math section has 5 answer choices per question (A through E)",
+                    correct: "pre2016",
+                    explanation: "Pre-2016 had 5 choices. The new 2025 Enhanced ACT reduced this to 4 choices (A-D)."
+                },
+                {
+                    fact: "Math performance counts as 1/3 of the Composite score",
+                    correct: "new2025",
+                    explanation: "New 2025: Math is 1/3 of Composite (with English & Reading). Pre-2016: Math was 1/4 (with English, Reading & Science)."
+                },
+                {
+                    fact: "The test includes 60 math questions",
+                    correct: "pre2016",
+                    explanation: "Pre-2016 had 60 questions. The new 2025 Enhanced ACT has only 45 questions."
+                },
+                {
+                    fact: "Calculators are allowed throughout the Math section",
+                    correct: "both",
+                    explanation: "Both versions allow calculator use for all math questions!"
+                },
+                {
+                    fact: "About 40% of questions focus on pre-high school math concepts",
+                    correct: "pre2016",
+                    explanation: "Pre-2016 was 40% pre-HS math. New 2025: Only 20% pre-HS math, with 80% focused on high school concepts."
+                },
+                {
+                    fact: "The Science section is required and counts toward the Composite score",
+                    correct: "pre2016",
+                    explanation: "Pre-2016: Science was required. New 2025: Science is optional and does NOT count in the Composite score."
+                },
+                {
+                    fact: "Students have approximately 67 seconds per question",
+                    correct: "new2025",
+                    explanation: "New 2025: 50 min ÷ 45 questions ≈ 67 seconds. Pre-2016: 60 min ÷ 60 questions = 60 seconds."
+                },
+                {
+                    fact: "The test emphasizes Algebra I & II, Geometry, and Statistics/Probability",
+                    correct: "new2025",
+                    explanation: "The new 2025 version proportionately emphasizes these core high school topics more than the pre-2016 version."
+                },
+                {
+                    fact: "Topics include Pre-Algebra, Algebra, Geometry, and Trigonometry",
+                    correct: "both",
+                    explanation: "Both versions cover these same general content areas, though in different proportions."
+                },
+                {
+                    fact: "80% of questions focus on high school level math concepts",
+                    correct: "new2025",
+                    explanation: "New 2025: 80% HS concepts. Pre-2016: Only 60% HS concepts, with more emphasis on easier pre-algebra."
+                },
+                {
+                    fact: "Students have more time per question compared to the other version",
+                    correct: "new2025",
+                    explanation: "New 2025: ~67 seconds per question. Pre-2016: 60 seconds per question. More time but harder questions!"
+                }
+            ];
+
+            const handleVote = (answer) => {
+                setSelectedAnswer(answer);
+                setVotes(prev => ({...prev, [answer]: prev[answer] + 1}));
+            };
+
+            const handleReveal = () => setShowResult(true);
+
+            const handleNext = () => {
+                setCurrentQuestion(prev => prev + 1);
+                setSelectedAnswer(null);
+                setShowResult(false);
+                setVotes({ pre2016: 0, new2025: 0, both: 0 });
+            };
+
+            const handleRestart = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswer(null);
+                setShowResult(false);
+                setVotes({ pre2016: 0, new2025: 0, both: 0 });
+            };
+
+            if (currentQuestion >= questions.length) {
+                return e('div', { className: 'min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-8 flex items-center justify-center' },
+                    e('div', { className: 'bg-white rounded-3xl shadow-2xl p-12 max-w-2xl w-full text-center' },
+                        e('div', { className: 'text-6xl mb-6' }, '🎉'),
+                        e('h2', { className: 'text-4xl font-bold text-gray-800 mb-4' }, 'Quiz Complete!'),
+                        e('p', { className: 'text-xl text-gray-600 mb-8' }, 
+                            'Great job exploring the differences between the Pre-2016 ACT and the New 2025 Enhanced ACT!'),
+                        e('button', {
+                            onClick: handleRestart,
+                            className: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105'
+                        }, 'Play Again')
+                    )
+                );
+            }
+
+            const q = questions[currentQuestion];
+            const totalVotes = votes.pre2016 + votes.new2025 + votes.both;
+            const getPercentage = (count) => totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+
+            return e('div', { className: 'min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 p-4 sm:p-8' },
+                e('div', { className: 'max-w-4xl mx-auto' },
+                    e('div', { className: 'text-center mb-8' },
+                        e('h1', { className: 'text-4xl sm:text-5xl font-bold text-white mb-2' }, 'ACT Math: Then vs. Now'),
+                        e('p', { className: 'text-xl text-blue-200' }, 'Interactive Quiz for Math Teachers')
+                    ),
+                    e('div', { className: 'bg-white bg-opacity-20 rounded-full h-3 mb-8' },
+                        e('div', {
+                            className: 'bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full transition-all duration-500',
+                            style: { width: `${((currentQuestion + 1) / questions.length) * 100}%` }
+                        })
+                    ),
+                    e('div', { className: 'bg-white rounded-3xl shadow-2xl p-8 sm:p-12 mb-8' },
+                        e('div', { className: 'mb-6' },
+                            e('span', { className: 'bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold' },
+                                `Question ${currentQuestion + 1} of ${questions.length}`)
+                        ),
+                        e('h2', { className: 'text-2xl sm:text-3xl font-bold text-gray-800 mb-8 leading-relaxed' }, q.fact),
+                        
+                        !showResult && e('div', null,
+                            e('p', { className: 'text-lg text-gray-600 mb-6 font-semibold' }, 'Which test version does this describe?'),
+                            e('div', { className: 'grid gap-4 mb-8' },
+                                e('button', {
+                                    onClick: () => handleVote('pre2016'),
+                                    disabled: selectedAnswer !== null,
+                                    className: `p-6 rounded-xl text-lg font-semibold transition-all transform hover:scale-105 ${
+                                        selectedAnswer === 'pre2016' ? 'bg-blue-600 text-white ring-4 ring-blue-300' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                                    } ${selectedAnswer !== null && selectedAnswer !== 'pre2016' ? 'opacity-50' : ''}`
+                                }, 'Pre-2016 ACT'),
+                                e('button', {
+                                    onClick: () => handleVote('new2025'),
+                                    disabled: selectedAnswer !== null,
+                                    className: `p-6 rounded-xl text-lg font-semibold transition-all transform hover:scale-105 ${
+                                        selectedAnswer === 'new2025' ? 'bg-purple-600 text-white ring-4 ring-purple-300' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                                    } ${selectedAnswer !== null && selectedAnswer !== 'new2025' ? 'opacity-50' : ''}`
+                                }, 'New 2025 Enhanced ACT'),
+                                e('button', {
+                                    onClick: () => handleVote('both'),
+                                    disabled: selectedAnswer !== null,
+                                    className: `p-6 rounded-xl text-lg font-semibold transition-all transform hover:scale-105 ${
+                                        selectedAnswer === 'both' ? 'bg-green-600 text-white ring-4 ring-green-300' : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                    } ${selectedAnswer !== null && selectedAnswer !== 'both' ? 'opacity-50' : ''}`
+                                }, 'Both Versions')
+                            ),
+                            selectedAnswer && e('button', {
+                                onClick: handleReveal,
+                                className: 'w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-xl text-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all transform hover:scale-105'
+                            }, 'Reveal Answer')
+                        ),
+                        
+                        showResult && e('div', null,
+                            e('div', { className: 'mb-8 p-6 bg-gray-50 rounded-xl' },
+                                e('h3', { className: 'text-lg font-bold text-gray-700 mb-4' }, 'Audience Votes:'),
+                                e('div', { className: 'space-y-3' },
+                                    ['pre2016', 'new2025', 'both'].map(type => {
+                                        const labels = { pre2016: 'Pre-2016 ACT', new2025: 'New 2025 Enhanced ACT', both: 'Both Versions' };
+                                        const colors = { pre2016: 'blue', new2025: 'purple', both: 'green' };
+                                        const color = colors[type];
+                                        return e('div', { key: type },
+                                            e('div', { className: 'flex justify-between mb-1' },
+                                                e('span', { className: `text-${color}-700 font-semibold` }, labels[type]),
+                                                e('span', { className: `text-${color}-700 font-bold` }, `${getPercentage(votes[type])}%`)
+                                            ),
+                                            e('div', { className: 'bg-gray-200 rounded-full h-3' },
+                                                e('div', { className: `bg-${color}-600 h-3 rounded-full`, style: { width: `${getPercentage(votes[type])}%` } })
+                                            )
+                                        );
+                                    })
+                                )
+                            ),
+                            e('div', {
+                                className: `p-6 rounded-xl mb-6 ${selectedAnswer === q.correct ? 'bg-green-50 border-2 border-green-500' : 'bg-red-50 border-2 border-red-500'}`
+                            },
+                                e('div', { className: 'flex items-center mb-3' },
+                                    selectedAnswer === q.correct ? e(CheckIcon, { className: 'w-8 h-8 text-green-600 mr-3' }) : e(XIcon, { className: 'w-8 h-8 text-red-600 mr-3' }),
+                                    e('span', { className: 'text-2xl font-bold text-gray-800' }, selectedAnswer === q.correct ? 'Correct!' : 'Not Quite!')
+                                ),
+                                e('p', { className: 'text-xl font-bold text-gray-700 mb-2' },
+                                    `Answer: ${q.correct === 'pre2016' ? 'Pre-2016 ACT' : q.correct === 'new2025' ? 'New 2025 Enhanced ACT' : 'Both Versions'}`),
+                                e('p', { className: 'text-gray-700 leading-relaxed' }, q.explanation)
+                            ),
+                            e('button', {
+                                onClick: handleNext,
+                                className: 'w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl text-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105'
+                            }, currentQuestion < questions.length - 1 ? 'Next Question →' : 'See Results')
+                        )
+                    ),
+                    e('div', { className: 'text-center text-blue-200 text-sm' },
+                        e('p', null, 'Helping Illinois Math Teachers prepare students for the Enhanced ACT')
+                    )
+                )
+            );
+        }
+
+        ReactDOM.render(e(QuizGame), document.getElementById('root'));
+    </script>
+</body>
+</html>
